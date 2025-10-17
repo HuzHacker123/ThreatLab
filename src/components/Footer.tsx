@@ -18,14 +18,14 @@ export const Footer: React.FC = () => {
             </p>
             <div className="flex space-x-4">
               <a
-                href="https://github.com"
+                href="https://github.com/HuzHacker123"
                 className="text-cyber-gray-400 hover:text-cyber-cyan transition-colors"
                 aria-label="GitHub"
               >
                 <Github className="h-5 w-5" />
               </a>
               <a
-                href="mailto:contact@threatlab.edu"
+                href="mailto:Huzefakazi3131@gmail.com"
                 className="text-cyber-gray-400 hover:text-cyber-cyan transition-colors"
                 aria-label="Email"
               >

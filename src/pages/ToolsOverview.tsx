@@ -20,7 +20,7 @@ export const ToolsOverview: React.FC = () => {
       description: 'Analyze password security, entropy, and common vulnerabilities. Get recommendations for creating stronger passwords.',
       features: ['Entropy calculation', 'Common password detection', 'Pattern analysis', 'Security recommendations'],
       difficulty: 'Beginner',
-      estimatedTime: '5-10 minutes',
+      //estimatedTime: '5-10 minutes',
       link: '/tools/password-tester',
       color: 'cyber-green'
     },
@@ -30,17 +30,17 @@ export const ToolsOverview: React.FC = () => {
       description: 'Learn and experiment with classical and modern encryption algorithms including Caesar, Vigenère, and RSA.',
       features: ['Caesar cipher', 'Vigenère cipher', 'RSA encryption', 'Interactive examples'],
       difficulty: 'Intermediate',
-      estimatedTime: '15-30 minutes',
+      //estimatedTime: '15-30 minutes',
       link: '/tools/cipher-tool',
       color: 'cyber-cyan'
-    },
+  },
     {
       icon: Eye,
       title: 'Phishing Simulator',
       description: 'Educational phishing awareness through safe simulations. Learn to identify and prevent phishing attacks.',
       features: ['Template previews', 'Educational warnings', 'Attack analysis', 'Prevention tips'],
       difficulty: 'Beginner',
-      estimatedTime: '10-20 minutes',
+      //estimatedTime: '10-20 minutes',
       link: '/tools/phishing-simulator',
       color: 'cyber-magenta'
     },
@@ -50,7 +50,7 @@ export const ToolsOverview: React.FC = () => {
       description: 'Discover network topology and identify potential vulnerabilities in a controlled environment.',
       features: ['Port scanning', 'Service detection', 'Vulnerability assessment', 'Legal compliance'],
       difficulty: 'Advanced',
-      estimatedTime: '20-45 minutes',
+      //estimatedTime: '20-45 minutes',
       link: '/tools/network-scanner',
       color: 'cyber-purple'
     },
@@ -60,7 +60,7 @@ export const ToolsOverview: React.FC = () => {
       description: 'Upload and analyze files for potential threats using signature detection and behavioral analysis.',
       features: ['File upload (50MB)', 'Signature scanning', 'Behavioral analysis', 'Detailed reports'],
       difficulty: 'Intermediate',
-      estimatedTime: '10-30 minutes',
+      //estimatedTime: '10-30 minutes',
       link: '/tools/malware-scanner',
       color: 'cyber-red'
     },
@@ -70,7 +70,7 @@ export const ToolsOverview: React.FC = () => {
       description: 'Interactive walkthrough of SQL injection vulnerabilities using a safe, isolated demonstration environment.',
       features: ['Guided tutorial', 'Live SQL queries', 'Vulnerability examples', 'Mitigation strategies'],
       difficulty: 'Intermediate',
-      estimatedTime: '25-45 minutes',
+      //estimatedTime: '25-45 minutes',
       link: '/tools/sql-injection-demo',
       color: 'cyber-cyan'
     }
@@ -139,9 +139,9 @@ export const ToolsOverview: React.FC = () => {
                     <span className={`font-medium ${getDifficultyColor(tool.difficulty)}`}>
                       {tool.difficulty}
                     </span>
-                    <span className="text-cyber-gray-400">
+                    {/* <span className="text-cyber-gray-400">
                       {tool.estimatedTime}
-                    </span>
+                    </span> */}
                   </div>
                 </div>
               </div>

@@ -421,8 +421,8 @@ export const CipherTool: React.FC = () => {
             </div>
             
             <div className="text-center">
-              <div className="inline-block p-3 bg-cyber-yellow/10 rounded-lg mb-4">
-                <div className="w-8 h-8 bg-cyber-yellow rounded-full flex items-center justify-center">
+              <div className="inline-block p-3 bg-cyber-purple/10 rounded-lg mb-4">
+                <div className="w-8 h-8 bg-cyber-purple rounded-full flex items-center justify-center">
                   <span className="text-cyber-dark font-bold text-sm">V</span>
                 </div>
               </div>

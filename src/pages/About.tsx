@@ -194,13 +194,13 @@ export const About: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="mailto:contact@threatlab.edu"
+              href="Huzefakazi3131@gmail.com"
               className="px-6 py-3 bg-cyber-cyan text-cyber-dark font-medium rounded-lg hover:bg-cyber-cyan/90 transition-colors"
             >
               Contact Us
             </a>
             <a
-              href="https://github.com/threatlab"
+              href="https://github.com/HuzHacker123"
               className="px-6 py-3 border-2 border-cyber-magenta text-cyber-magenta font-medium rounded-lg hover:bg-cyber-magenta hover:text-cyber-dark transition-colors"
             >
               View on GitHub
