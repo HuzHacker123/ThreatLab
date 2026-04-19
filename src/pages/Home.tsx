@@ -66,7 +66,7 @@ export const Home: React.FC = () => {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-cyber-dark via-cyber-navy to-cyber-blue"></div>
-        <div className="absolute inset-0 bg-cyber-grid bg-cyber-grid opacity-30"></div>
+        <div className="absolute inset-0 bg-cyber-grid opacity-30"></div>
         
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
           <div className="mb-8 inline-block">
