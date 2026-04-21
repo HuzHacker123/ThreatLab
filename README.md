@@ -72,8 +72,17 @@ Open [**http://localhost:5174**](http://localhost:5174) in your browser and star
 
 ## 🛠️ Features
 
-### 🔍 Network Scanner
+### � Cipher Tool
+Master encryption and cryptography fundamentals with interactive ciphers.
 
+#### 🌟 FREE Features (No Setup Required)
+- **🔄 Caesar Cipher** - Classic shift cipher with variable key
+- **🎯 Vigenère Cipher** - Polyalphabetic encryption with keyword
+- **🔑 RSA Encryption** - Asymmetric cryptography demonstration
+- **⚡ Real-time Encryption/Decryption** - Instant cipher operations
+- **📚 Educational Explanations** - Learn how each cipher works
+
+### 🔍 Network Scanner
 Discover and analyze network infrastructure with professional-grade tools.
 
 #### 🌟 FREE Features (No Setup Required)
@@ -89,7 +98,6 @@ Discover and analyze network infrastructure with professional-grade tools.
 - **📊 Historical Scan Data** - Device and service history
 
 ### 🛡️ Malware Scanner
-
 Analyze suspicious files and understand malware behavior.
 
 #### 🌟 FREE Features
@@ -101,21 +109,52 @@ Analyze suspicious files and understand malware behavior.
 - **⚡ Real-time Analysis** - Instant threat assessment
 - **📋 Detailed Reports** - Comprehensive security analysis
 
+### 🔒 Password Tester
+Evaluate password strength and learn secure password practices.
+
+#### 🌟 FREE Features (No Setup Required)
+- **📊 Strength Scoring** - Real-time password strength analysis
+- **🎯 Entropy Calculation** - Mathematical security assessment
+- **🚨 Pattern Detection** - Identifies weak patterns and common passwords
+- **💡 Security Recommendations** - Personalized improvement suggestions
+- **📈 Visual Feedback** - Color-coded strength indicators
+
+### 🎣 Phishing Simulator
+Learn to recognize and avoid phishing attacks through interactive demonstrations.
+
+#### 🌟 FREE Features (No Setup Required)
+- **📧 Multiple Templates** - Gmail, Amazon, Instagram phishing simulations
+- **👁️ Visual Previews** - See how phishing pages look and feel
+- **🚩 Red Flag Indicators** - Learn to spot suspicious elements
+- **📚 Educational Content** - Understand phishing techniques and prevention
+- **🛡️ Safe Environment** - Practice without real risk
+
+### 💉 SQL Injection Demo
+Explore SQL injection vulnerabilities through interactive demonstrations.
+
+#### 🌟 FREE Features (No Setup Required)
+- **🎯 Step-by-Step Attacks** - Guided SQL injection demonstrations
+- **📊 Query Visualization** - See how malicious input affects database queries
+- **🛡️ Prevention Strategies** - Learn secure coding practices
+- **📈 Multiple Attack Types** - Union attacks, blind injection, and more
+- **🎓 Educational Explanations** - Understand the underlying vulnerabilities
+
 ---
 
 ## 📊 Feature Comparison
 
-| Feature | 🌟 FREE | 💎 Premium (Shodan) | 💎 Premium (VirusTotal) |
-|---------|--------|-------------------|----------------------|
-| **IP Geolocation** | ✅ | ✅ | - |
-| **DNS Lookup** | ✅ | ✅ | - |
-| **SSL Analysis** | ✅ | ✅ | - |
-| **Port Scanning** | ❌ | ✅ | - |
-| **Service Detection** | ❌ | ✅ | - |
-| **Vulnerability Data** | ❌ | ✅ | - |
-| **Malware Scanning** | Basic | - | ✅ Full |
-| **Setup Required** | None | API Key | API Key |
-| **Rate Limits** | 1000/day | 100-1000/month | 500/day |
+| Tool | 🌟 FREE Features | 💎 Premium Features | Setup Required |
+|------|------------------|-------------------|----------------|
+| **🔐 Cipher Tool** | Caesar, Vigenère, RSA ciphers | - | None |
+| **🔍 Network Scanner** | IP geolocation, DNS, SSL analysis | Port scanning, vulnerabilities | Shodan API Key |
+| **🛡️ Malware Scanner** | File hashing, basic analysis | 90+ antivirus engines | VirusTotal API Key |
+| **🔒 Password Tester** | Strength analysis, entropy calc | - | None |
+| **🎣 Phishing Simulator** | Template demos, red flags | - | None |
+| **💉 SQL Injection Demo** | Attack demonstrations | - | None |
+
+### 🎯 **All Core Features Work Without Any Setup!**
+
+**Start learning cybersecurity immediately - no API keys, no subscriptions, no waiting!**
 
 ---
 
@@ -147,21 +186,42 @@ SHODAN_API_KEY=your_shodan_key_here
 
 ## 🎮 How to Use
 
-### Network Scanner
-1. **Launch** ThreatLab at http://localhost:5174
-2. **Navigate** to Network Scanner
-3. **Choose** scan type:
-   - **Host Information** 🌍 - IP geolocation (FREE)
-   - **DNS Lookup** 🔎 - Domain resolution (FREE)
-   - **SSL Analysis** 🔒 - Certificate check (FREE)
-4. **Enter** target (IP address or domain)
-5. **Click** "Start Scan" and explore results!
+### 🔐 Cipher Tool
+1. **Select** cipher type (Caesar, Vigenère, or RSA)
+2. **Choose** Encrypt or Decrypt mode
+3. **Enter** your message and key
+4. **Click** "Process" to see the result
+5. **Learn** from the educational explanations
 
-### Malware Scanner
+### 🔍 Network Scanner
+1. **Navigate** to Network Scanner
+2. **Choose** scan type (Host Info, DNS, SSL)
+3. **Enter** target (IP address or domain)
+4. **Click** "Start Scan" and explore results!
+
+### 🛡️ Malware Scanner
 1. **Open** Malware Scanner tab
 2. **Upload** suspicious file
 3. **View** instant analysis results
 4. **Learn** from detailed security reports
+
+### 🔒 Password Tester
+1. **Go** to Password Tester
+2. **Type** or paste your password
+3. **Watch** real-time strength analysis
+4. **Read** improvement recommendations
+
+### 🎣 Phishing Simulator
+1. **Visit** Phishing Simulator
+2. **Choose** a template (Gmail, Amazon, etc.)
+3. **Examine** the phishing indicators
+4. **Learn** prevention strategies
+
+### 💉 SQL Injection Demo
+1. **Open** SQL Injection Demo
+2. **Follow** step-by-step attack demonstrations
+3. **See** how malicious input affects queries
+4. **Learn** secure coding practices
 
 ---
 
