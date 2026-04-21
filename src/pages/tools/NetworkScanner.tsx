@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
-  Wifi, Play, AlertTriangle, Shield, CheckCircle, XCircle, Info, Clock, 
-  Server, AlertCircle, HardDrive, Globe, Lock, Zap, Network, Activity, Copy, ExternalLink
+  Wifi, Play, AlertTriangle, CheckCircle, Info, 
+  Server, Globe, Lock, Zap, Activity, Copy,
 } from 'lucide-react';
 
 interface ScanResponse {
