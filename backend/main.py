@@ -58,6 +58,13 @@ class ShodanClient:
                 )
                 if response.status_code == 200:
                     return response.json()
+                elif response.status_code in [401, 403]:
+                    # Handle insufficient credits
+                    return {
+                        "error": "Shodan host lookup requires query credits",
+                        "message": "Your Shodan account has no query credits remaining. Please upgrade your account or wait for credits to reset.",
+                        "upgrade_url": "https://www.shodan.io/member"
+                    }
                 else:
                     raise HTTPException(status_code=response.status_code, detail="Failed to fetch from Shodan")
         except Exception as e:
@@ -90,6 +97,13 @@ class ShodanClient:
                 )
                 if response.status_code == 200:
                     return response.json()
+                elif response.status_code in [401, 403]:
+                    # Handle insufficient credits or membership requirements
+                    return {
+                        "error": "Shodan DNS lookup requires a paid membership",
+                        "message": "Free accounts don't have DNS lookup credits. Please upgrade your Shodan account.",
+                        "upgrade_url": "https://www.shodan.io/member"
+                    }
                 else:
                     raise HTTPException(status_code=response.status_code, detail="DNS lookup failed")
         except Exception as e:

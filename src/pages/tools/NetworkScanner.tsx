@@ -24,13 +24,11 @@ export const NetworkScanner: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [acknowledged, setAcknowledged] = useState(false);
   const [legalConsent, setLegalConsent] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [showApiKeyForm, setShowApiKeyForm] = useState(false);
 
   const scanTypes = [
-    { id: 'host', name: 'Host Information', description: 'Detailed host & port analysis via Shodan', icon: Server },
-    { id: 'dns', name: 'DNS Lookup', description: 'Resolve domain to IPs and get records', icon: Globe },
-    { id: 'ssl', name: 'SSL/TLS Analysis', description: 'Certificate and SSL information', icon: Lock }
+    { id: 'host', name: 'Host Information', description: 'Detailed host & port analysis via Shodan (Requires query credits)', icon: Server },
+    { id: 'dns', name: 'DNS Lookup', description: 'Resolve domain to IPs and get records (Paid membership required)', icon: Globe },
+    { id: 'ssl', name: 'SSL/TLS Analysis', description: 'Certificate and SSL information (Coming soon)', icon: Lock }
   ];
 
   const handleScan = async () => {
@@ -44,12 +42,6 @@ export const NetworkScanner: React.FC = () => {
       return;
     }
 
-    if (!apiKey.trim()) {
-      setError('Please configure your Shodan API key first.');
-      setShowApiKeyForm(true);
-      return;
-    }
-
     setIsScanning(true);
     setScanResults(null);
     setError(null);
@@ -59,7 +51,6 @@ export const NetworkScanner: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
           target: target.trim(),
@@ -73,7 +64,14 @@ export const NetworkScanner: React.FC = () => {
         setScanResults(data);
         setError(null);
       } else {
-        setError(data.error || 'Scan failed. Please check your API key and target.');
+        // Handle specific error cases
+        if (data.error && data.error.includes('Shodan DNS lookup requires a paid membership')) {
+          setError('🚫 DNS Lookup Unavailable: Shodan DNS resolution requires a paid membership. Try Host Information or SSL Analysis instead, or upgrade your Shodan account at https://www.shodan.io/member');
+        } else if (data.error && data.error.includes('Shodan host lookup requires query credits')) {
+          setError('🚫 Host Lookup Unavailable: Your Shodan account has no query credits remaining. Please upgrade your account or wait for credits to reset at https://www.shodan.io/member');
+        } else {
+          setError(data.error || 'Scan failed. Please check your target and try again.');
+        }
         setScanResults(null);
       }
     } catch (err) {
@@ -245,11 +243,11 @@ export const NetworkScanner: React.FC = () => {
             <Wifi className="h-12 w-12 text-cyber-purple" />
           </div>
           <h1 className="text-4xl font-bold text-cyber-purple mb-4 font-mono">
-            Advanced Network Scanner
+            Network Scanner
           </h1>
           <p className="text-xl text-cyber-gray-300 max-w-3xl mx-auto">
-            Enterprise-grade network reconnaissance powered by Shodan API. Scan IPs, domains, and CIDR ranges 
-            to discover services, vulnerabilities, and network topology.
+            Scan IP addresses, domains, and networks using Shodan API.
+            Educational tool for understanding network reconnaissance techniques.
           </p>
         </div>
 
@@ -326,40 +324,6 @@ export const NetworkScanner: React.FC = () => {
             </h2>
             
             <div className="space-y-6">
-              {/* API Configuration */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-medium text-cyber-gray-300">
-                    Shodan API Key
-                  </label>
-                  <button
-                    onClick={() => setShowApiKeyForm(!showApiKeyForm)}
-                    className="text-xs text-cyber-purple hover:text-cyber-cyan transition-colors"
-                  >
-                    {showApiKeyForm ? 'Hide' : 'Configure'}
-                  </button>
-                </div>
-                {showApiKeyForm && (
-                  <div className="mb-4 p-4 bg-cyber-dark/50 rounded-lg border border-cyber-purple/30">
-                    <p className="text-xs text-cyber-gray-400 mb-3">
-                      Get your API key from <a href="https://www.shodan.io/" target="_blank" rel="noopener noreferrer" className="text-cyber-purple hover:text-cyber-cyan underline">shodan.io</a>
-                    </p>
-                    <input
-                      type="password"
-                      value={apiKey}
-                      onChange={(e) => setApiKey(e.target.value)}
-                      className="w-full px-3 py-2 bg-cyber-dark border border-cyber-purple/30 rounded text-cyber-gray-100 placeholder-cyber-gray-500 focus:outline-none focus:ring-2 focus:ring-cyber-purple text-sm"
-                      placeholder="sk_..."
-                    />
-                  </div>
-                )}
-                {apiKey && (
-                  <div className="p-2 bg-cyber-green/10 border border-cyber-green/30 rounded text-xs text-cyber-green">
-                    ✓ API Key configured
-                  </div>
-                )}
-              </div>
-
               {/* Target Input */}
               <div>
                 <label className="block text-sm font-medium text-cyber-gray-300 mb-2">
