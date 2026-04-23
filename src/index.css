@@ -1,3 +1,113 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    background-color: #0f1419;
+    color: #f8fafc;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .transform-3d {
+    transform-style: preserve-3d;
+  }
+
+  .translate-z-12 {
+    transform: translateZ(12px);
+  }
+
+  .translate-z-20 {
+    transform: translateZ(20px);
+  }
+
+  .cyber-panel {
+    background-color: rgba(26, 31, 46, 0.45);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 1rem;
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .cyber-panel-3d {
+    transition-property: all;
+    transition-duration: 500ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+    box-shadow: 0 25px 65px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 255, 255, 0.14) inset;
+  }
+
+  .cyber-panel-3d:hover {
+    transform: translateY(-8px) rotateX(4deg) rotateY(-4deg);
+    box-shadow: 0 35px 80px rgba(0, 0, 0, 0.55), 0 0 35px rgba(0, 255, 255, 0.18);
+  }
+
+  .cyber-gradient-text {
+    background: linear-gradient(90deg, #00ffff, #ff00d0, #8a2be2, #00ffff);
+    background-size: 220% 220%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradientShift 9s ease infinite;
+  }
+
+  .cyber-button {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .cyber-button::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.35), transparent 65%);
+    transform: translateX(-140%) skewX(-22deg);
+    transition: transform 0.75s ease;
+    z-index: -1;
+  }
+
+  .cyber-button:hover::after {
+    transform: translateX(160%) skewX(-22deg);
+  }
+
+  .cyber-grid-noise {
+    position: relative;
+  }
+
+  .cyber-grid-noise::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.08;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.8) 0.5px, transparent 0.5px);
+    background-size: 4px 4px;
+    mix-blend-mode: soft-light;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

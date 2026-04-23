@@ -64,43 +64,45 @@ export const Home: React.FC = () => {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden perspective-1000">
         <div className="absolute inset-0 bg-gradient-to-br from-cyber-dark via-cyber-navy to-cyber-blue"></div>
         <div className="absolute inset-0 bg-cyber-grid opacity-30"></div>
+        <div className="absolute top-24 -left-16 w-72 h-72 rounded-full bg-cyber-cyan/15 blur-3xl animate-float-3d"></div>
+        <div className="absolute bottom-20 -right-12 w-80 h-80 rounded-full bg-cyber-magenta/15 blur-3xl animate-float-3d" style={{ animationDelay: '2s' }}></div>
         
-        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
-          <div className="mb-8 inline-block">
-            <div className="p-4 bg-cyber-cyan/10 rounded-full border border-cyber-cyan/30 animate-pulse-slow">
+        <div className="relative z-10 text-center max-w-5xl mx-auto px-4 transform-3d animate-fade-up">
+          <div className="mb-8 inline-block animate-fade-up" style={{ animationDelay: '120ms' }}>
+            <div className="p-4 bg-cyber-cyan/10 rounded-full border border-cyber-cyan/30 animate-pulse-slow cyber-panel-3d">
               <Shield className="h-16 w-16 text-cyber-cyan animate-glow" />
             </div>
           </div>
           
-          <h1 className="text-6xl md:text-8xl font-bold mb-6 font-mono">
-            <span className="bg-gradient-to-r from-cyber-cyan to-cyber-magenta bg-clip-text text-transparent">
+          <h1 className="text-6xl md:text-8xl font-bold mb-6 font-mono animate-fade-up" style={{ animationDelay: '220ms' }}>
+            <span className="cyber-gradient-text">
               ThreatLab
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-cyber-gray-300 mb-8 leading-relaxed">
+          <p className="text-xl md:text-2xl text-cyber-gray-300 mb-8 leading-relaxed animate-fade-up" style={{ animationDelay: '320ms' }}>
             Educational Cybersecurity Toolkit for the Next Generation
           </p>
           
-          <p className="text-lg text-cyber-gray-400 mb-12 max-w-2xl mx-auto">
+          <p className="text-lg text-cyber-gray-400 mb-12 max-w-2xl mx-auto animate-fade-up" style={{ animationDelay: '420ms' }}>
             Master cybersecurity fundamentals through hands-on experience with our 
             comprehensive suite of educational tools and simulations.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-up" style={{ animationDelay: '520ms' }}>
             <Link
               to="/tools"
-              className="px-8 py-4 bg-cyber-cyan text-cyber-dark font-semibold rounded-lg hover:bg-cyber-cyan/90 hover:scale-105 transform transition-all duration-200 flex items-center justify-center space-x-2 animate-glow"
+              className="cyber-button px-8 py-4 bg-cyber-cyan text-cyber-dark font-semibold rounded-lg hover:bg-cyber-cyan/90 hover:scale-105 hover:-translate-y-1 transform transition-all duration-300 flex items-center justify-center space-x-2 animate-glow"
             >
               <span>Explore Tools</span>
               <ArrowRight className="h-5 w-5" />
             </Link>
             <Link
               to="/about"
-              className="px-8 py-4 border-2 border-cyber-magenta text-cyber-magenta font-semibold rounded-lg hover:bg-cyber-magenta hover:text-cyber-dark hover:scale-105 transform transition-all duration-200"
+              className="px-8 py-4 border-2 border-cyber-magenta text-cyber-magenta font-semibold rounded-lg hover:bg-cyber-magenta hover:text-cyber-dark hover:scale-105 hover:-translate-y-1 transform transition-all duration-300"
             >
               Learn More
             </Link>
@@ -116,7 +118,7 @@ export const Home: React.FC = () => {
       {/* Features Section */}
       <section className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 animate-fade-up">
             <h2 className="text-4xl font-bold text-cyber-cyan mb-4 font-mono">
               Security Tools & Simulations
             </h2>
@@ -131,9 +133,10 @@ export const Home: React.FC = () => {
               <Link
                 key={index}
                 to={feature.link}
-                className="group bg-cyber-navy/50 border border-cyber-cyan/20 rounded-xl p-6 hover:border-cyber-cyan hover:bg-cyber-navy/70 transition-all duration-300 hover:scale-105"
+                className="group cyber-panel cyber-panel-3d p-6 hover:border-cyber-cyan/80"
+                style={{ animationDelay: `${index * 80}ms` }}
               >
-                <div className="flex items-center justify-center w-12 h-12 bg-cyber-cyan/10 rounded-lg mb-4 group-hover:bg-cyber-cyan/20 transition-colors">
+                <div className="flex items-center justify-center w-12 h-12 bg-cyber-cyan/10 rounded-lg mb-4 group-hover:bg-cyber-cyan/20 transition-colors group-hover:translate-z-12">
                   <feature.icon className="h-6 w-6 text-cyber-cyan" />
                 </div>
                 <h3 className="text-xl font-semibold text-cyber-gray-100 mb-2">
@@ -157,8 +160,9 @@ export const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="flex items-center justify-center w-16 h-16 bg-cyber-cyan/10 rounded-full mb-4 mx-auto">
+              <div key={index} className="text-center cyber-panel p-4 hover:border-cyber-cyan/60 transition-all duration-300 hover:-translate-y-1">
+                <div className="relative flex items-center justify-center w-16 h-16 bg-cyber-cyan/10 rounded-full mb-4 mx-auto">
+                  <span className="absolute inset-0 rounded-full border border-cyber-cyan/30 animate-pulse-ring"></span>
                   <stat.icon className="h-8 w-8 text-cyber-cyan" />
                 </div>
                 <div className="text-3xl font-bold text-cyber-cyan mb-2 font-mono">
@@ -176,7 +180,7 @@ export const Home: React.FC = () => {
       {/* CTA Section */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-cyber-cyan mb-6 font-mono">
+          <h2 className="text-4xl font-bold text-cyber-cyan mb-6 font-mono cyber-gradient-text">
             Ready to Start Learning?
           </h2>
           <p className="text-xl text-cyber-gray-300 mb-8">
@@ -185,7 +189,7 @@ export const Home: React.FC = () => {
           </p>
           <Link
             to="/register"
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-cyber-cyan to-cyber-magenta text-cyber-dark font-semibold rounded-lg hover:scale-105 transform transition-all duration-200 space-x-2"
+            className="cyber-button inline-flex items-center px-8 py-4 bg-gradient-to-r from-cyber-cyan to-cyber-magenta text-cyber-dark font-semibold rounded-lg hover:scale-105 hover:-translate-y-1 transform transition-all duration-300 space-x-2"
           >
             <span>Get Started Free</span>
             <ArrowRight className="h-5 w-5" />

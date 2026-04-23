@@ -13,6 +13,39 @@ import {
 } from 'lucide-react';
 
 export const ToolsOverview: React.FC = () => {
+  const colorStyles = {
+    'cyber-green': {
+      iconWrap: 'bg-cyber-green/10 group-hover:bg-cyber-green/20',
+      icon: 'text-cyber-green',
+      button: 'bg-cyber-green/20 border-cyber-green text-cyber-green hover:bg-cyber-green',
+      dot: 'bg-cyber-green',
+    },
+    'cyber-cyan': {
+      iconWrap: 'bg-cyber-cyan/10 group-hover:bg-cyber-cyan/20',
+      icon: 'text-cyber-cyan',
+      button: 'bg-cyber-cyan/20 border-cyber-cyan text-cyber-cyan hover:bg-cyber-cyan',
+      dot: 'bg-cyber-cyan',
+    },
+    'cyber-magenta': {
+      iconWrap: 'bg-cyber-magenta/10 group-hover:bg-cyber-magenta/20',
+      icon: 'text-cyber-magenta',
+      button: 'bg-cyber-magenta/20 border-cyber-magenta text-cyber-magenta hover:bg-cyber-magenta',
+      dot: 'bg-cyber-magenta',
+    },
+    'cyber-purple': {
+      iconWrap: 'bg-cyber-purple/10 group-hover:bg-cyber-purple/20',
+      icon: 'text-cyber-purple',
+      button: 'bg-cyber-purple/20 border-cyber-purple text-cyber-purple hover:bg-cyber-purple',
+      dot: 'bg-cyber-purple',
+    },
+    'cyber-red': {
+      iconWrap: 'bg-cyber-red/10 group-hover:bg-cyber-red/20',
+      icon: 'text-cyber-red',
+      button: 'bg-cyber-red/20 border-cyber-red text-cyber-red hover:bg-cyber-red',
+      dot: 'bg-cyber-red',
+    },
+  } as const;
+
   const tools = [
     {
       icon: Lock,
@@ -89,11 +122,11 @@ export const ToolsOverview: React.FC = () => {
     <div className="min-h-screen py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-block p-4 bg-cyber-cyan/10 rounded-full mb-6">
+        <div className="text-center mb-16 animate-fade-up">
+          <div className="inline-block p-4 bg-cyber-cyan/10 rounded-full mb-6 cyber-panel-3d">
             <Shield className="h-12 w-12 text-cyber-cyan" />
           </div>
-          <h1 className="text-5xl font-bold text-cyber-cyan mb-6 font-mono">
+          <h1 className="text-5xl font-bold text-cyber-cyan mb-6 font-mono cyber-gradient-text">
             Security Tools
           </h1>
           <p className="text-xl text-cyber-gray-300 max-w-3xl mx-auto leading-relaxed">
@@ -104,7 +137,7 @@ export const ToolsOverview: React.FC = () => {
         </div>
 
         {/* Safety Notice */}
-        <div className="bg-cyber-navy/50 border border-cyber-red/30 rounded-xl p-6 mb-12">
+        <div className="cyber-panel border-cyber-red/30 p-6 mb-12">
           <div className="flex items-start space-x-4">
             <AlertTriangle className="h-6 w-6 text-cyber-red flex-shrink-0 mt-1" />
             <div>
@@ -123,13 +156,16 @@ export const ToolsOverview: React.FC = () => {
         {/* Tools Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {tools.map((tool, index) => (
-            <div
+            <article
               key={index}
-              className="bg-cyber-navy/40 border border-cyber-cyan/20 rounded-xl p-8 hover:border-cyber-cyan hover:bg-cyber-navy/60 transition-all duration-300 group"
+              className="cyber-panel cyber-panel-3d p-8 group"
+              style={{ animationDelay: `${index * 90}ms` }}
             >
               <div className="flex items-start space-x-4 mb-6">
-                <div className={`p-3 bg-${tool.color}/10 rounded-lg group-hover:bg-${tool.color}/20 transition-colors`}>
-                  <tool.icon className={`h-8 w-8 text-${tool.color}`} />
+                <div
+                  className={`p-3 rounded-lg transition-colors ${colorStyles[tool.color as keyof typeof colorStyles].iconWrap}`}
+                >
+                  <tool.icon className={`h-8 w-8 ${colorStyles[tool.color as keyof typeof colorStyles].icon}`} />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-2xl font-semibold text-cyber-gray-100 mb-2">
@@ -155,7 +191,7 @@ export const ToolsOverview: React.FC = () => {
                 <div className="grid grid-cols-2 gap-2">
                   {tool.features.map((feature, featureIndex) => (
                     <div key={featureIndex} className="flex items-center space-x-2 text-sm">
-                      <div className="w-2 h-2 bg-cyber-cyan rounded-full flex-shrink-0"></div>
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${colorStyles[tool.color as keyof typeof colorStyles].dot}`}></div>
                       <span className="text-cyber-gray-300">{feature}</span>
                     </div>
                   ))}
@@ -164,12 +200,12 @@ export const ToolsOverview: React.FC = () => {
 
               <Link
                 to={tool.link}
-                className={`inline-flex items-center px-6 py-3 bg-${tool.color}/20 border border-${tool.color} text-${tool.color} font-medium rounded-lg hover:bg-${tool.color} hover:text-cyber-dark transition-all duration-200 space-x-2 group-hover:scale-105 transform`}
+                className={`cyber-button inline-flex items-center px-6 py-3 border font-medium rounded-lg transition-all duration-300 space-x-2 group-hover:scale-105 group-hover:-translate-y-0.5 ${colorStyles[tool.color as keyof typeof colorStyles].button} hover:text-cyber-dark`}
               >
                 <span>Launch Tool</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
-            </div>
+            </article>
           ))}
         </div>
 
@@ -184,7 +220,7 @@ export const ToolsOverview: React.FC = () => {
           </p>
           <Link
             to="/about"
-            className="inline-flex items-center px-6 py-3 border-2 border-cyber-magenta text-cyber-magenta font-medium rounded-lg hover:bg-cyber-magenta hover:text-cyber-dark transition-all duration-200 space-x-2"
+            className="inline-flex items-center px-6 py-3 border-2 border-cyber-magenta text-cyber-magenta font-medium rounded-lg hover:bg-cyber-magenta hover:text-cyber-dark transition-all duration-300 hover:-translate-y-1 space-x-2"
           >
             <span>Learn More About ThreatLab</span>
             <ArrowRight className="h-4 w-4" />
