@@ -2,7 +2,7 @@
 
 ThreatLab is an educational cybersecurity platform built to help learners explore security concepts through hands-on, browser-based tools and safe simulations.
 
-It includes a modern React frontend and a FastAPI backend that powers network intelligence and malware analysis features using external APIs.
+It includes a modern React frontend and a FastAPI backend that powers network intelligence and malware analysis features.
 
 ---
 
@@ -44,7 +44,6 @@ Additional platform pages include:
 - **httpx**
 - **python-dotenv**
 - Integrations with:
-  - **Shodan API**
   - **VirusTotal API**
 
 ---
@@ -95,7 +94,7 @@ cd backend
 pip install -r requirements.txt
 ```
 
-Copy environment file and add your API keys:
+Copy environment file and add your API key:
 
 ```bash
 cp .env.example .env
@@ -103,7 +102,6 @@ cp .env.example .env
 
 Set:
 
-- `SHODAN_API_KEY`
 - `VIRUSTOTAL_API_KEY`
 
 Run backend server:
@@ -120,9 +118,8 @@ Backend runs at: `http://127.0.0.1:8000`
 
 - `GET /` — root health/info
 - `GET /api/health` — service health
-- `POST /api/scan` — scan host/domain/CIDR via Shodan
-- `POST /api/host-info` — detailed host lookup
-- `POST /api/search` — custom Shodan search
+- `POST /api/scan` — local scan (host, DNS, SSL)
+- `POST /api/host-info` — detailed local host lookup
 - `POST /api/malware-scan` — file malware scan via VirusTotal
 
 ---
@@ -130,7 +127,7 @@ Backend runs at: `http://127.0.0.1:8000`
 ## ⚠️ Important Notes
 
 - ThreatLab is intended for **education and ethical security training only**.
-- Some backend features require valid paid/free API keys and may be subject to rate limits or account restrictions.
+- Malware scanning requires a valid VirusTotal API key and may be subject to rate limits.
 - Do not use these tools against systems you do not own or explicitly have permission to test.
 
 ---

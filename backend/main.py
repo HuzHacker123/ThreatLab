@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
@@ -7,6 +7,11 @@ import os
 from dotenv import load_dotenv
 import logging
 import hashlib
+import socket
+import ssl
+import ipaddress
+import asyncio
+from datetime import datetime, timezone
 
 load_dotenv()
 
@@ -27,8 +32,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Constants
-SHODAN_API_KEY = os.getenv("SHODAN_API_KEY", "")
-SHODAN_BASE_URL = "https://api.shodan.io"
 VIRUSTOTAL_API_KEY = os.getenv("VIRUSTOTAL_API_KEY", "")
 VIRUSTOTAL_BASE_URL = "https://www.virustotal.com/api/v3"
 
@@ -42,79 +45,128 @@ class ScanResult(BaseModel):
     data: Optional[dict] = None
     error: Optional[str] = None
 
-# Shodan API Client
-class ShodanClient:
-    def __init__(self, api_key: str):
-        self.api_key = api_key
-        self.base_url = SHODAN_BASE_URL
-        
-    async def get_host_info(self, ip: str):
-        """Get detailed information about a host from Shodan"""
-        try:
-            async with httpx.AsyncClient(timeout=30) as client:
-                response = await client.get(
-                    f"{self.base_url}/shodan/host/{ip}",
-                    params={"key": self.api_key, "minify": False}
-                )
-                if response.status_code == 200:
-                    return response.json()
-                elif response.status_code in [401, 403]:
-                    # Handle insufficient credits
-                    return {
-                        "error": "Shodan host lookup requires query credits",
-                        "message": "Your Shodan account has no query credits remaining. Please upgrade your account or wait for credits to reset.",
-                        "upgrade_url": "https://www.shodan.io/member"
-                    }
-                else:
-                    raise HTTPException(status_code=response.status_code, detail="Failed to fetch from Shodan")
-        except Exception as e:
-            logger.error(f"Shodan API error: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Error fetching Shodan data: {str(e)}")
-    
-    async def search(self, query: str):
-        """Search Shodan for hosts matching a query"""
-        try:
-            async with httpx.AsyncClient(timeout=30) as client:
-                response = await client.get(
-                    f"{self.base_url}/shodan/host/search",
-                    params={"key": self.api_key, "query": query}
-                )
-                if response.status_code == 200:
-                    return response.json()
-                else:
-                    raise HTTPException(status_code=response.status_code, detail="Shodan search failed")
-        except Exception as e:
-            logger.error(f"Shodan search error: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Error searching Shodan: {str(e)}")
-    
-    async def get_dns_record(self, domain: str):
-        """Get DNS records for a domain"""
-        try:
-            async with httpx.AsyncClient(timeout=30) as client:
-                response = await client.get(
-                    f"{self.base_url}/dns/resolve",
-                    params={"key": self.api_key, "domain": domain}
-                )
-                if response.status_code == 200:
-                    return response.json()
-                elif response.status_code in [401, 403]:
-                    # Handle insufficient credits or membership requirements
-                    return {
-                        "error": "Shodan DNS lookup requires a paid membership",
-                        "message": "Free accounts don't have DNS lookup credits. Please upgrade your Shodan account.",
-                        "upgrade_url": "https://www.shodan.io/member"
-                    }
-                else:
-                    raise HTTPException(status_code=response.status_code, detail="DNS lookup failed")
-        except Exception as e:
-            logger.error(f"DNS lookup error: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Error resolving DNS: {str(e)}")
+class LocalScanner:
+    """Local network intelligence scanner (no paid external API required)."""
 
-# Initialize Shodan client
-if not SHODAN_API_KEY:
-    logger.warning("SHODAN_API_KEY not set in environment variables")
+    COMMON_PORTS = [21, 22, 23, 25, 53, 80, 110, 123, 135, 139, 143, 443, 445, 3306, 3389, 5432, 6379, 8080, 8443]
+    SERVICE_MAP = {
+        21: "ftp",
+        22: "ssh",
+        23: "telnet",
+        25: "smtp",
+        53: "dns",
+        80: "http",
+        110: "pop3",
+        123: "ntp",
+        135: "msrpc",
+        139: "netbios",
+        143: "imap",
+        443: "https",
+        445: "smb",
+        3306: "mysql",
+        3389: "rdp",
+        5432: "postgresql",
+        6379: "redis",
+        8080: "http-alt",
+        8443: "https-alt",
+    }
 
-shodan_client = ShodanClient(SHODAN_API_KEY)
+    @staticmethod
+    def is_ip_address(value: str) -> bool:
+        try:
+            ipaddress.ip_address(value)
+            return True
+        except ValueError:
+            return False
+
+    async def resolve_domain(self, domain: str) -> dict:
+        try:
+            addrinfo = await asyncio.to_thread(socket.getaddrinfo, domain, None)
+            ipv4_records = sorted({item[4][0] for item in addrinfo if item[0] == socket.AF_INET})
+            ipv6_records = sorted({item[4][0] for item in addrinfo if item[0] == socket.AF_INET6})
+            return {
+                "A": ipv4_records,
+                "AAAA": ipv6_records,
+            }
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"DNS resolution failed: {str(e)}")
+
+    async def _is_port_open(self, ip: str, port: int, timeout: float = 0.7) -> bool:
+        try:
+            conn = asyncio.open_connection(ip, port)
+            reader, writer = await asyncio.wait_for(conn, timeout=timeout)
+            writer.close()
+            await writer.wait_closed()
+            return True
+        except Exception:
+            return False
+
+    async def scan_open_ports(self, ip: str) -> list:
+        tasks = [self._is_port_open(ip, port) for port in self.COMMON_PORTS]
+        results = await asyncio.gather(*tasks)
+        return [port for port, is_open in zip(self.COMMON_PORTS, results) if is_open]
+
+    async def get_host_info(self, target: str) -> dict:
+        is_domain = not self.is_ip_address(target)
+
+        if is_domain:
+            dns_data = await self.resolve_domain(target)
+            if not dns_data.get("A"):
+                raise HTTPException(status_code=400, detail="No IPv4 address found for this domain")
+            ip = dns_data["A"][0]
+            hostnames = [target]
+        else:
+            ip = target
+            try:
+                reverse = await asyncio.to_thread(socket.gethostbyaddr, ip)
+                hostnames = [reverse[0], *reverse[1]]
+            except Exception:
+                hostnames = []
+
+        open_ports = await self.scan_open_ports(ip)
+        services = [
+            {
+                "port": port,
+                "service": self.SERVICE_MAP.get(port, "unknown"),
+                "banner": "Service detected via TCP connect scan",
+            }
+            for port in open_ports
+        ]
+
+        return {
+            "ip": ip,
+            "ip_str": ip,
+            "hostnames": hostnames,
+            "ports": open_ports,
+            "data": services,
+            "source": "local-scanner",
+        }
+
+    async def get_ssl_info(self, target: str, port: int = 443) -> dict:
+        def _fetch_cert(host: str, tls_port: int):
+            context = ssl.create_default_context()
+            with socket.create_connection((host, tls_port), timeout=5) as sock:
+                with context.wrap_socket(sock, server_hostname=host) as ssock:
+                    return ssock.getpeercert()
+
+        try:
+            cert = await asyncio.to_thread(_fetch_cert, target, port)
+            return {
+                "subject": cert.get("subject", []),
+                "issuer": cert.get("issuer", []),
+                "version": cert.get("version"),
+                "serial_number": cert.get("serialNumber"),
+                "not_before": cert.get("notBefore"),
+                "not_after": cert.get("notAfter"),
+                "subject_alt_names": cert.get("subjectAltName", []),
+                "scanned_at": datetime.now(timezone.utc).isoformat(),
+                "source": "local-scanner",
+            }
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"SSL analysis failed: {str(e)}")
+
+
+local_scanner = LocalScanner()
 
 # VirusTotal API Client
 class VirusTotalClient:
@@ -211,7 +263,7 @@ async def root():
 async def scan(request: ScanRequest):
     """
     Main scanning endpoint
-    Supports: IP addresses, IP ranges (CIDR), and domain names
+    Supports: IP addresses and domain names
     """
     try:
         target = request.target.strip()
@@ -220,37 +272,28 @@ async def scan(request: ScanRequest):
         if not target:
             raise HTTPException(status_code=400, detail="Target cannot be empty")
         
-        if not SHODAN_API_KEY:
-            raise HTTPException(status_code=500, detail="Shodan API key not configured")
-        
-        # Determine if target is domain or IP
-        is_domain = "." in target and not target.replace(".", "").isdigit() and "/" not in target
-        is_cidr = "/" in target
-        
+        # CIDR scanning is intentionally disabled in local mode to avoid broad, potentially abusive scans.
+        if "/" in target:
+            raise HTTPException(status_code=400, detail="CIDR range scanning is not supported in this local scanner")
+
+        is_domain = not local_scanner.is_ip_address(target)
         result_data = {}
-        
-        if is_domain:
-            # DNS resolution and host info
-            logger.info(f"Resolving domain: {target}")
-            dns_info = await shodan_client.get_dns_record(target)
-            result_data["dns"] = dns_info
-            
-            # Get host info for resolved IP
-            if "A" in dns_info:
-                for ip in dns_info["A"]:
-                    host_info = await shodan_client.get_host_info(ip)
-                    result_data[f"host_{ip}"] = host_info
-        
-        elif is_cidr:
-            # CIDR range search
-            logger.info(f"Searching CIDR range: {target}")
-            search_results = await shodan_client.search(f"net:{target}")
-            result_data["search"] = search_results
-        
+
+        if scan_type == "dns":
+            if not is_domain:
+                raise HTTPException(status_code=400, detail="DNS lookup requires a domain target")
+            logger.info(f"Resolving DNS for domain: {target}")
+            result_data["dns"] = await local_scanner.resolve_domain(target)
+
+        elif scan_type == "ssl":
+            logger.info(f"Running SSL analysis for target: {target}")
+            result_data["ssl"] = await local_scanner.get_ssl_info(target)
+
         else:
-            # Single IP address
-            logger.info(f"Scanning IP: {target}")
-            host_info = await shodan_client.get_host_info(target)
+            logger.info(f"Running host scan for target: {target}")
+            if is_domain:
+                result_data["dns"] = await local_scanner.resolve_domain(target)
+            host_info = await local_scanner.get_host_info(target)
             result_data["host"] = host_info
         
         return ScanResult(
@@ -271,46 +314,24 @@ async def scan(request: ScanRequest):
 
 @app.post("/api/host-info")
 async def get_host_info(request: ScanRequest):
-    """Get detailed information about a specific host"""
+    """Get detailed local scanner information about a specific host"""
     try:
-        ip = request.target.strip()
-        
-        if not ip:
-            raise HTTPException(status_code=400, detail="IP address cannot be empty")
-        
-        if not SHODAN_API_KEY:
-            raise HTTPException(status_code=500, detail="Shodan API key not configured")
-        
-        host_info = await shodan_client.get_host_info(ip)
+        target = request.target.strip()
+
+        if not target:
+            raise HTTPException(status_code=400, detail="Target cannot be empty")
+
+        if "/" in target:
+            raise HTTPException(status_code=400, detail="CIDR range scanning is not supported in this endpoint")
+
+        host_info = await local_scanner.get_host_info(target)
         
         return ScanResult(
             success=True,
             data={
-                "target": ip,
+                "target": target,
                 "host_info": host_info
             }
-        )
-    except Exception as e:
-        logger.error(f"Error: {str(e)}")
-        return ScanResult(success=False, error=str(e))
-
-@app.post("/api/search")
-async def search(request: ScanRequest):
-    """Search Shodan with a custom query"""
-    try:
-        query = request.target.strip()
-        
-        if not query:
-            raise HTTPException(status_code=400, detail="Query cannot be empty")
-        
-        if not SHODAN_API_KEY:
-            raise HTTPException(status_code=500, detail="Shodan API key not configured")
-        
-        results = await shodan_client.search(query)
-        
-        return ScanResult(
-            success=True,
-            data=results
         )
     except Exception as e:
         logger.error(f"Error: {str(e)}")
@@ -321,7 +342,8 @@ async def health_check():
     """Health check endpoint"""
     return {
         "status": "healthy",
-        "api_configured": bool(SHODAN_API_KEY),
+        "local_scanner": True,
+        "virustotal_configured": bool(VIRUSTOTAL_API_KEY),
         "service": "Network Scanner API"
     }
 

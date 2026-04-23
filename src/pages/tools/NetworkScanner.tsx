@@ -26,9 +26,9 @@ export const NetworkScanner: React.FC = () => {
   const [legalConsent, setLegalConsent] = useState(false);
 
   const scanTypes = [
-    { id: 'host', name: 'Host Information', description: 'Detailed host & port analysis via Shodan (Requires query credits)', icon: Server },
-    { id: 'dns', name: 'DNS Lookup', description: 'Resolve domain to IPs and get records (Paid membership required)', icon: Globe },
-    { id: 'ssl', name: 'SSL/TLS Analysis', description: 'Certificate and SSL information (Coming soon)', icon: Lock }
+    { id: 'host', name: 'Host Information', description: 'Basic host profiling and common open port discovery', icon: Server },
+    { id: 'dns', name: 'DNS Lookup', description: 'Resolve a domain to IPv4/IPv6 records', icon: Globe },
+    { id: 'ssl', name: 'SSL/TLS Analysis', description: 'Inspect TLS certificate issuer, subject, and validity', icon: Lock }
   ];
 
   const handleScan = async () => {
@@ -64,14 +64,7 @@ export const NetworkScanner: React.FC = () => {
         setScanResults(data);
         setError(null);
       } else {
-        // Handle specific error cases
-        if (data.error && data.error.includes('Shodan DNS lookup requires a paid membership')) {
-          setError('🚫 DNS Lookup Unavailable: Shodan DNS resolution requires a paid membership. Try Host Information or SSL Analysis instead, or upgrade your Shodan account at https://www.shodan.io/member');
-        } else if (data.error && data.error.includes('Shodan host lookup requires query credits')) {
-          setError('🚫 Host Lookup Unavailable: Your Shodan account has no query credits remaining. Please upgrade your account or wait for credits to reset at https://www.shodan.io/member');
-        } else {
-          setError(data.error || 'Scan failed. Please check your target and try again.');
-        }
+        setError(data.error || 'Scan failed. Please check your target and try again.');
         setScanResults(null);
       }
     } catch (err) {
@@ -211,6 +204,53 @@ export const NetworkScanner: React.FC = () => {
     );
   };
 
+  const renderSslInfo = () => {
+    if (!scanResults?.data?.results?.ssl) return null;
+
+    const sslData = scanResults.data.results.ssl;
+
+    return (
+      <div className="space-y-4">
+        <div className="bg-cyber-navy/40 border border-cyber-purple/20 rounded-xl p-6">
+          <h4 className="text-cyber-cyan font-semibold mb-4 flex items-center">
+            <Lock className="h-5 w-5 mr-2" />
+            SSL/TLS Certificate Details
+          </h4>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-cyber-dark/50 rounded-lg p-4">
+              <p className="text-cyber-gray-400 text-sm">Valid From</p>
+              <p className="text-cyber-gray-200 font-mono text-sm">{sslData.not_before || 'N/A'}</p>
+            </div>
+            <div className="bg-cyber-dark/50 rounded-lg p-4">
+              <p className="text-cyber-gray-400 text-sm">Valid Until</p>
+              <p className="text-cyber-gray-200 font-mono text-sm">{sslData.not_after || 'N/A'}</p>
+            </div>
+            <div className="bg-cyber-dark/50 rounded-lg p-4 md:col-span-2">
+              <p className="text-cyber-gray-400 text-sm">Issuer</p>
+              <p className="text-cyber-gray-200 font-mono text-xs break-all">
+                {sslData.issuer ? JSON.stringify(sslData.issuer) : 'N/A'}
+              </p>
+            </div>
+            <div className="bg-cyber-dark/50 rounded-lg p-4 md:col-span-2">
+              <p className="text-cyber-gray-400 text-sm">Subject</p>
+              <p className="text-cyber-gray-200 font-mono text-xs break-all">
+                {sslData.subject ? JSON.stringify(sslData.subject) : 'N/A'}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <p className="text-cyber-gray-400 text-sm mb-2">Raw Certificate Response</p>
+            <pre className="bg-cyber-dark/50 p-4 rounded text-cyber-gray-300 text-xs overflow-x-auto max-h-64 overflow-y-auto">
+              {JSON.stringify(sslData, null, 2)}
+            </pre>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderResults = () => {
     if (!scanResults?.success) return null;
 
@@ -218,6 +258,8 @@ export const NetworkScanner: React.FC = () => {
       return renderHostInfo();
     } else if (scanType === 'dns') {
       return renderDnsInfo();
+    } else if (scanType === 'ssl') {
+      return renderSslInfo();
     }
 
     return (
@@ -246,7 +288,7 @@ export const NetworkScanner: React.FC = () => {
             Network Scanner
           </h1>
           <p className="text-xl text-cyber-gray-300 max-w-3xl mx-auto">
-            Scan IP addresses, domains, and networks using Shodan API.
+            Scan IP addresses and domains using built-in local network analysis.
             Educational tool for understanding network reconnaissance techniques.
           </p>
         </div>
@@ -337,7 +379,7 @@ export const NetworkScanner: React.FC = () => {
                   placeholder="192.168.1.1 or example.com"
                 />
                 <p className="text-xs text-cyber-gray-400 mt-2">
-                  IP address, domain, or CIDR range (e.g., 192.168.1.0/24)
+                  IP address or domain (e.g., 8.8.8.8 or example.com)
                 </p>
               </div>
 
@@ -447,31 +489,41 @@ export const NetworkScanner: React.FC = () => {
           </div>
         </div>
 
-        {/* Backend Setup Instructions */}
+        {/* Network Scanning Guide */}
         <div className="mt-12 bg-cyber-navy/40 border border-cyber-purple/20 rounded-xl p-8">
           <h3 className="text-xl font-semibold text-cyber-purple mb-4 flex items-center">
             <Info className="h-5 w-5 mr-2" />
-            Backend Setup Instructions
+            Network Scanning Guide
           </h3>
           <div className="space-y-4 text-cyber-gray-300">
             <div>
-              <p className="font-semibold text-cyber-cyan mb-2">1. Install Python Dependencies</p>
-              <code className="bg-cyber-dark/50 p-2 rounded text-sm block">
-                cd backend && pip install -r requirements.txt
-              </code>
+              <p className="font-semibold text-cyber-cyan mb-2">1. Choose the right scan type</p>
+              <ul className="text-sm space-y-1 pl-5 list-disc">
+                <li><span className="text-cyber-gray-100 font-medium">Host Information:</span> Checks common ports and basic host details.</li>
+                <li><span className="text-cyber-gray-100 font-medium">DNS Lookup:</span> Resolves domain names to IPv4/IPv6 addresses.</li>
+                <li><span className="text-cyber-gray-100 font-medium">SSL/TLS Analysis:</span> Reads certificate issuer, subject, and validity dates.</li>
+              </ul>
             </div>
             <div>
-              <p className="font-semibold text-cyber-cyan mb-2">2. Configure Your Shodan API Key</p>
-              <code className="bg-cyber-dark/50 p-2 rounded text-sm block mb-2">
-                cp .env.example .env
-              </code>
-              <p className="text-sm">Edit the .env file and add your Shodan API key from <a href="https://www.shodan.io/" target="_blank" rel="noopener noreferrer" className="text-cyber-purple hover:text-cyber-cyan underline">shodan.io</a></p>
+              <p className="font-semibold text-cyber-cyan mb-2">2. Use safe, authorized targets</p>
+              <ul className="text-sm space-y-1 pl-5 list-disc">
+                <li>Your own lab machines (e.g., local VM or test server).</li>
+                <li>Private/internal IPs you own and control.</li>
+                <li>Domains where you have explicit permission.</li>
+              </ul>
             </div>
             <div>
-              <p className="font-semibold text-cyber-cyan mb-2">3. Start the FastAPI Server</p>
-              <code className="bg-cyber-dark/50 p-2 rounded text-sm block">
-                python main.py
-              </code>
+              <p className="font-semibold text-cyber-cyan mb-2">3. Understand the results</p>
+              <ul className="text-sm space-y-1 pl-5 list-disc">
+                <li><span className="text-cyber-gray-100 font-medium">Open ports</span> indicate exposed services that should be reviewed.</li>
+                <li><span className="text-cyber-gray-100 font-medium">DNS records</span> help map infrastructure and hostname coverage.</li>
+                <li><span className="text-cyber-gray-100 font-medium">SSL dates</span> show certificate validity and renewal status.</li>
+              </ul>
+            </div>
+            <div className="bg-cyber-dark/50 border border-cyber-purple/20 rounded-lg p-4 text-sm">
+              <p className="text-cyber-gray-200">
+                <span className="text-cyber-cyan font-semibold">Tip:</span> Start with DNS lookup, then run host scan, then SSL analysis for a quick and structured reconnaissance workflow.
+              </p>
             </div>
           </div>
         </div>
